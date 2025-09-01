@@ -56,3 +56,44 @@ export const viewNote = async (req, res) => {
     return res.status(500).send({ success: false, message: error.message });
   }
 };
+
+export const updateNote = async (req, res) => {
+  try {
+    const noteId = req.params.id;
+    const { name, description } = req.body;
+
+    if (!noteId) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Note ID is required" });
+    }
+
+    if (!name || !description) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Please enter all fields" });
+    }
+
+    const existingNote = await Prisma.notes.findUnique({
+      where: { id: noteId },
+    });
+
+    if (!existingNote) {
+      return res
+        .status(404)
+        .send({ success: false, message: "Note not found" });
+    }
+
+    const updatedNote = await Prisma.notes.update({
+      where: { id: noteId },
+      data: {
+        name,
+        body: description,
+      },
+    });
+
+    return res.status(200).send({ success: true, data: updatedNote });
+  } catch (error) {
+    return res.status(500).send({ success: false, message: error.message });
+  }
+};

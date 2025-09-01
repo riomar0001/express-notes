@@ -11,11 +11,13 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const PORT = 3000;
+
 app.use(cookieParser());
 
 app.get("/", (request, response) => {
   console.log("Server is Runnning");
-  return response.status(200).send({ meesage: "hello world!" });
+  return response.status(200).send({ message: "King Frances L. Luna" });
 });
 
 app.use("/api/note", noteRoute);
