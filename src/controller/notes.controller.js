@@ -56,3 +56,86 @@ export const viewNote = async (req, res) => {
     return res.status(500).send({ success: false, message: error.message });
   }
 };
+
+
+export const getNotes = async (req, res) => {
+  try {
+    const notes = await Prisma.notes.findMany({
+      orderBy: {
+        create_at: "desc",
+      },
+    });
+
+    return res.status(200).send({ success: true, data: notes });
+  } catch (error) {
+    return res.status(500).send({ success: false, message: error.message });
+  }
+};
+
+export const uptNote = async (req, res) => {
+  try {
+    const noteId = req.params.id;
+    const { name, description } = req.body;
+
+    if (!noteId) {
+      return res.status(400).send({
+        success: false,
+        message: "ID for Note is required",
+      });
+    }
+
+    const updatedNote = await Prisma.notes.update({
+      where: { id: noteId },
+      data: {
+        name,
+        body: description,
+        update_at: new Date(),
+      },
+    });
+
+    return res.status(200).send({
+      success: true,
+      message: "Note is updated successfully!",
+      data: updatedNote,
+    });
+  } catch (error) {
+    if (error.code === "P2025") {
+      return res.status(404).send({
+        success: false,
+        message: "Note not found",
+      });
+    }
+    return res.status(500).send({ success: false, message: error.message });
+  }
+};
+
+
+export const delNote = async (req, res) => {
+  try {
+    const noteId = req.params.id;
+
+    if (!noteId) {
+      return res.status(400).send({
+        success: false,
+        message: "Note ID is required",
+      });
+    }
+
+    await Prisma.notes.delete({
+      where: { id: noteId },
+    });
+
+    return res.status(200).send({
+      success: true,
+      message: "Note is deleted successfully!",
+    });
+  } catch (error) {
+    if (error.code === "P2025") {
+      return res.status(404).send({
+        success: false,
+        message: "Note not found",
+      });
+    }
+    return res.status(500).send({ success: false, message: error.message });
+  }
+};
