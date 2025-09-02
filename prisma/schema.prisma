@@ -6,12 +6,14 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
+  // This is the database connection configuration
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+
+  // Use the DATABASE_URL environment variable to connect to your database
+  url = env("DATABASE_URL")
 }
 
 model Notes {
